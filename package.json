@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "0.9.13",
-		"@vitest/coverage-istanbul": "3.0.7",
+		"@vitest/coverage-istanbul": "4.0.10",
 		"typescript": "5.8.2",
 		"vitest": "3.0.7",
 		"wrangler": "4.43.0"
