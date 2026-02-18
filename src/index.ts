@@ -51,10 +51,13 @@ function constructDNSRecord(request: Request): AddressableRecord {
 		throw new HttpError(422, 'The "hostname" parameter is required and cannot be empty.');
 	}
 
+	// More robust IP type detection
+	const isIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip);
+
 	return {
 		content: ip,
 		name: hostname,
-		type: ip.includes('.') ? 'A' : 'AAAA',
+		type: isIPv4 ? 'A' : 'AAAA',
 		ttl: 1,
 	};
 }
@@ -106,14 +109,28 @@ async function update(clientOptions: ClientOptions, newRecord: AddressableRecord
 
 	console.log('DNS record for ' + newRecord.name + '(' + newRecord.type + ') updated successfully to ' + newRecord.content);
 
-	return new Response('OK', { status: 200 });
+	// Add security headers
+	const headers = {
+		'X-Content-Type-Options': 'nosniff',
+		'X-Frame-Options': 'DENY',
+		'Strict-Transport-Security': 'max-age=31536000',
+	};
+
+	return new Response('OK', { status: 200, headers });
 }
 
 export default {
 	async fetch(request): Promise<Response> {
+		// Log request info (redact sensitive data from URL)
+		const url = new URL(request.url);
+		const safeUrl = `${url.origin}${url.pathname}?hostname=${url.searchParams.get('hostname') || '[missing]'}&ip=${url.searchParams.get('ip') || url.searchParams.get('myip') || '[missing]'}`;
+		
 		console.log('Requester IP: ' + request.headers.get('CF-Connecting-IP'));
-		console.log(request.method + ': ' + request.url);
-		console.log('Body: ' + (await request.text()));
+		console.log(request.method + ': ' + safeUrl);
+		
+		// Clone request before consuming body to avoid issues
+		const requestClone = request.clone();
+		console.log('Body: ' + (await requestClone.text()));
 
 		try {
 			// Construct client options and DNS record

@@ -12,13 +12,13 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "0.12.13",
-		"@vitest/coverage-istanbul": "4.0.10",
-		"typescript": "5.8.2",
-		"vitest": "3.0.7",
+		"@vitest/coverage-istanbul": "3.2.4",
+		"typescript": "5.9.3",
+		"vitest": "3.2.4",
 		"wrangler": "4.66.0"
 	},
 	"dependencies": {
-		"@cloudflare/types": "6.29.1",
-		"cloudflare": "4.1.0"
+		"@cloudflare/types": "7.0.0",
+		"cloudflare": "5.2.0"
 	}
 }
